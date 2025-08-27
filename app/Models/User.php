@@ -3,9 +3,11 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Http\Request;
+use Illuminate\Notifications\Notifiable;
+use App\Manager\Constants\GlobalConstants;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -44,5 +46,11 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function getUserList(Request $request)
+    {
+        $query = self::query();
+        return $query->paginate($request->input('per_page', GlobalConstants::DEFAULT_PAGINATION));
     }
 }

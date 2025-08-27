@@ -10,7 +10,7 @@
                 <div class="sb-sidenav-menu-heading">Menu</div>
 
                 <div>
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="{{ route('user.index') }}">
                         <div class="sb-nav-link-icon"><i class="fa-solid fa-user"></i></div>
                         Users
                     </a>

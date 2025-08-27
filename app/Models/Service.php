@@ -58,4 +58,19 @@ class Service extends Model
             ->where('status', self::STATUS_ACTIVE)
             ->pluck('name', 'id');
     }
+
+    public static function getTotalServices()
+    {
+        return self::count();
+    }
+
+    public static function getActiveServices()
+    {
+        return self::where('status', self::STATUS_ACTIVE)->count();
+    }
+
+    public static function getInactiveServices()
+    {
+        return self::where('status', self::STATUS_INACTIVE)->count();
+    }
 }

@@ -70,4 +70,19 @@ class Booking extends Model
     {
         $booking->delete();
     }
+
+    public static function getTotalBookings()
+    {
+        return self::count();
+    }
+
+    public static function getActiveBookings()
+    {
+        return self::whereIn('status', [self::STATUS_PENDING, self::STATUS_CONFIRMED])->count();
+    }
+
+    public static function getInactiveBookings()
+    {
+        return self::whereIn('status', [self::STATUS_CANCELLED, self::STATUS_COMPLETED])->count();
+    }
 }

@@ -76,17 +76,17 @@ use App\Models\Service;
 
     <div class="row my-4 row-gap-2">
         <div class="col-lg-3">
-            {{-- <a href="{{ route('blog.index') }}" target="_blank"> --}}
+            <a href="{{ route('user.index') }}" target="_blank">
                 <div class="custom-card d-flex justify-content-between">
                     <div class="card-body">
                         <h6 class="card-title">Users</h6>
-                        {{-- <p class="card-text custom-text mt-1">{{ $totalBlogs }}</p> --}}
+                        <p class="card-text custom-text mt-1">{{ $totalUsers }}</p>
 
                         <div class="custom-active-inactive d-flex justify-content-start align-items-center column-gap-2">
                             <p class="custom-active"></p>
-                            {{-- <div class="text-white">{{ $activeBlogs }}</div> --}}
+                            <div class="text-white">{{ $activeUsers }}</div>
                             <p class="custom-inactive"></p>
-                            {{-- <div class="text-white">{{ $inactiveBlogs }}</div> --}}
+                            <div class="text-white">{{ $inactiveUsers }}</div>
                         </div>
                     </div>
 
@@ -98,17 +98,17 @@ use App\Models\Service;
         </div>
 
         <div class="col-lg-3">
-            {{-- <a href="{{ route('appointment.index') }}" target="_blank"> --}}
+            <a href="{{ route('booking.index') }}" target="_blank">
                 <div class="custom-card d-flex justify-content-between">
                     <div class="card-body">
                         <h6 class="card-title">Bookings</h6>
-                        {{-- <p class="card-text custom-text mt-1">{{ $totalAppointments }}</p> --}}
+                        <p class="card-text custom-text mt-1">{{ $totalBookings }}</p>
 
                         <div class="custom-active-inactive d-flex justify-content-start align-items-center column-gap-2">
                             <p class="custom-active"></p>
-                            {{-- <div class="text-white">{{ $activeAppointments }}</div> --}}
+                            <div class="text-white">{{ $activeBookings }}</div>
                             <p class="custom-inactive"></p>
-                            {{-- <div class="text-white">{{ $inactiveAppointments }}</div> --}}
+                            <div class="text-white">{{ $inactiveBookings }}</div>
                         </div>
                     </div>
 
@@ -120,17 +120,17 @@ use App\Models\Service;
         </div>
 
         <div class="col-lg-3">
-            {{-- <a href="{{ route('service.index') }}" target="_blank"> --}}
+            <a href="{{ route('service.index') }}" target="_blank">
                 <div class="custom-card d-flex justify-content-between">
                     <div class="card-body">
                         <h6 class="card-title">Services</h6>
-                        {{-- <p class="card-text custom-text mt-1">{{ $totalServices }}</p> --}}
+                        <p class="card-text custom-text mt-1">{{ $totalServices }}</p>
 
                         <div class="custom-active-inactive d-flex justify-content-start align-items-center column-gap-2">
                             <p class="custom-active"></p>
-                            {{-- <div class="text-white">{{ $activeServices }}</div> --}}
+                            <div class="text-white">{{ $activeServices }}</div>
                             <p class="custom-inactive"></p>
-                            {{-- <div class="text-white">{{ $inactiveServices }}</div> --}}
+                            <div class="text-white">{{ $inactiveServices }}</div>
                         </div>
                     </div>
 
@@ -142,34 +142,8 @@ use App\Models\Service;
         </div>
     </div>
 
-    {{-- <div class="row row-gap-2">
-        <div class="col-lg-6">
-            <nav class="navbar bg-body-tertiary mb-3">
-                <div class="container">
-                    <a class="navbar-brand" href="#">
-                        <strong>Latest Blogs</strong>
-                    </a>
-                </div>
-            </nav>
-            @foreach ($blogs as $blog)
-                <a href="{{ route('blog.show', $blog->id) }}" target="_blank">
-                    <div class="custom-card2 d-flex justify-content-between align-items-center mb-3">
-                        <div class="custom-active-inactive">
-                            <strong>{{ $blog->title }}</strong> <br>
-                            {{ strip_tags(Illuminate\Support\Str::limit($blog->description, 40)) }} <br>
-                            <small class="text-success">{{ $blog->created_at->toDayDateTimeString() }}</small>
-                        </div>
-
-                        <div class="card-icon">
-                            <img class="img-table rounded" src="{{ get_image(Blog::IMAGE_PATH . $blog->image) }}"
-                                alt="{{ $blog->slug }}">
-                        </div>
-                    </div>
-                </a>
-            @endforeach
-        </div>
-
-        <div class="col-lg-6">
+    <div class="row row-gap-2">
+        <div class="col-lg-12">
             <nav class="navbar bg-body-tertiary mb-3">
                 <div class="container">
                     <a class="navbar-brand" href="#">
@@ -182,19 +156,20 @@ use App\Models\Service;
                     <div class="custom-card2 d-flex justify-content-between align-items-center mb-3">
                         <div class="custom-active-inactive">
                             <strong>{{ $service->name }}</strong> <br>
-                            {{ strip_tags(Illuminate\Support\Str::limit($service->short_description, 40)) }} <br>
+                            {{ strip_tags(Illuminate\Support\Str::limit($service->description, 40)) }} <br>
                             <small class="text-success">{{ $service->created_at->toDayDateTimeString() }}</small>
                         </div>
 
                         <div class="card-icon">
-                            <strong class="mb-0 card-title">{{$service->parentServiceCategory->name ?? ''}}</strong> <br>
-                            <p class="mb-0 card-title">{{ $service->childServiceCategory->name ?? ''}}</p>
+                            @if($service->price)
+                                <strong class="mb-0 card-title">${{ number_format($service->price, 2) }}</strong>
+                            @endif
                         </div>
                     </div>
                 </a>
             @endforeach
         </div>
-    </div> --}}
+    </div>
 @endsection
 
 @push('scripts')

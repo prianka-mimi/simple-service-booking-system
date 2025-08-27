@@ -53,4 +53,19 @@ class User extends Authenticatable
         $query = self::query();
         return $query->paginate($request->input('per_page', GlobalConstants::DEFAULT_PAGINATION));
     }
+
+    public static function getTotalUsers()
+    {
+        return self::count();
+    }
+
+    public static function getActiveUsers()
+    {
+        return self::whereNotNull('email_verified_at')->count();
+    }
+
+    public static function getInactiveUsers()
+    {
+        return self::whereNull('email_verified_at')->count();
+    }
 }

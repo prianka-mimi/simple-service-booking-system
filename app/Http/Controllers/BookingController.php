@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Service;
-use App\Http\Requests\StoreServiceRequest;
-use App\Http\Requests\UpdateServiceRequest;
+use App\Http\Requests\StoreBookingRequest;
+use App\Http\Requests\UpdateBookingRequest;
 use App\Manager\Traits\CommonResponse;
+use App\Models\Booking;
+use App\Models\Service;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class ServiceController extends Controller
+class BookingController extends Controller
 {
     use CommonResponse;
 
-    public static string $route = 'service';
+    public static string $route = 'booking';
 
     /**
      * Display a listing of the resource.
@@ -24,7 +26,7 @@ class ServiceController extends Controller
     final public function index(Request $request): View
     {
         $cms_content = [
-            'module'       => 'Service',
+            'module'       => 'Booking',
             'module_url'   => route(self::$route . '.index'),
             'active_title' => __('List'),
             'button_type'  => 'list',
@@ -32,8 +34,8 @@ class ServiceController extends Controller
             'button_url'   => route(self::$route . '.create'),
         ];
 
-        $services    = (new Service())->getServiceList($request);
-        return view('backend.modules.service.index', compact('cms_content', 'services'));
+        $bookings = (new Booking())->getBookingList($request);
+        return view('backend.modules.booking.index', compact('cms_content', 'bookings'));
     }
 
     /**
@@ -42,7 +44,7 @@ class ServiceController extends Controller
     final public function create(): View
     {
         $cms_content = [
-            'module'       => 'Service',
+            'module'       => 'Booking',
             'module_url'   => route(self::$route . '.index'),
             'active_title' => __('Create'),
             'button_type'  => 'list',
@@ -50,22 +52,24 @@ class ServiceController extends Controller
             'button_url'   => route(self::$route . '.index'),
         ];
 
-        return view('backend.modules.service.create', compact('cms_content'));
+        $users = User::pluck('name', 'id');
+        $services = (new Service())->getServiceAssociated();
+        return view('backend.modules.booking.create', compact('cms_content', 'users', 'services'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    final public function store(StoreServiceRequest $request): RedirectResponse
+    final public function store(StoreBookingRequest $request): RedirectResponse
     {
         try {
             DB::beginTransaction();
-            (new Service())->storeService($request);
-            success_alert(__('Service Created Successfully'));
+            (new Booking())->storeBooking($request);
+            success_alert(__('Booking Created Successfully'));
             DB::commit();
         } catch (Throwable $throwable) {
             DB::rollBack();
-            app_error_log('SERVICE_CREATED_FAILED', $throwable, 'error');
+            app_error_log('BOOKING_CREATED_FAILED', $throwable, 'error');
             failed_alert($throwable->getMessage());
             return redirect()->back();
         }
@@ -76,10 +80,10 @@ class ServiceController extends Controller
     /**
      * Display the specified resource.
      */
-    final public function show(Service $service): View
+    final public function show(Booking $booking): View
     {
         $cms_content = [
-            'module'       => 'Service',
+            'module'       => 'Booking',
             'module_url'   => route(self::$route . '.index'),
             'active_title' => __('Details'),
             'button_type'  => 'list',
@@ -87,16 +91,17 @@ class ServiceController extends Controller
             'button_url'   => route(self::$route . '.index'),
         ];
 
-        return view('backend.modules.service.show', compact('cms_content', 'service'));
+        $booking->load(['user', 'service']);
+        return view('backend.modules.booking.show', compact('cms_content', 'booking'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    final public function edit(Service $service): View
+    final public function edit(Booking $booking): View
     {
         $cms_content = [
-            'module'       => 'Service',
+            'module'       => 'Booking',
             'module_url'   => route(self::$route . '.index'),
             'active_title' => __('Edit'),
             'button_type'  => 'list',
@@ -104,22 +109,24 @@ class ServiceController extends Controller
             'button_url'   => route(self::$route . '.index'),
         ];
 
-        return view('backend.modules.service.edit', compact('cms_content', 'service'));
+        $users = User::pluck('name', 'id');
+        $services = (new Service())->getServiceAssociated();
+        return view('backend.modules.booking.edit', compact('cms_content', 'booking', 'users', 'services'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    final public function update(UpdateServiceRequest $request, Service $service): RedirectResponse
+    final public function update(UpdateBookingRequest $request, Booking $booking): RedirectResponse
     {
         try {
             DB::beginTransaction();
-            (new Service())->updateService($request, $service);
-            success_alert(__('Service Updated Successfully'));
+            (new Booking())->updateBooking($request, $booking);
+            success_alert(__('Booking Updated Successfully'));
             DB::commit();
         } catch (Throwable $throwable) {
             DB::rollBack();
-            app_error_log('SERVICE_UPDATED_FAILED', $throwable, 'error');
+            app_error_log('BOOKING_UPDATED_FAILED', $throwable, 'error');
             failed_alert($throwable->getMessage());
             return redirect()->back();
         }
@@ -130,16 +137,16 @@ class ServiceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    final public function destroy(Service $service): RedirectResponse
+    final public function destroy(Booking $booking): RedirectResponse
     {
         try {
             DB::beginTransaction();
-            (new Service())->deleteService($service);
-            success_alert(__('Service Deleted Successfully'));
+            (new Booking())->deleteBooking($booking);
+            success_alert(__('Booking Deleted Successfully'));
             DB::commit();
         } catch (Throwable $throwable) {
             DB::rollBack();
-            app_error_log('SERVICE_DELETED_FAILED', $throwable, 'error');
+            app_error_log('BOOKING_DELETED_FAILED', $throwable, 'error');
             failed_alert($throwable->getMessage());
             return redirect()->back();
         }

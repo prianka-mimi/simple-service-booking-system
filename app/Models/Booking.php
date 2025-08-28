@@ -95,4 +95,12 @@ class Booking extends Model
             ->select('id', 'user_id', 'service_id', 'booking_date', 'status')
             ->paginate($request->input('per_page', GlobalConstants::DEFAULT_PAGINATION));
     }
+
+    public function getAdminBookingList(Request $request)
+    {
+        return self::query()
+            ->with(['user:id,name,email', 'service:id,name,price'])
+            ->select('id', 'user_id', 'service_id', 'booking_date', 'status', 'created_at')
+            ->paginate($request->input('per_page', GlobalConstants::DEFAULT_PAGINATION));
+    }
 }

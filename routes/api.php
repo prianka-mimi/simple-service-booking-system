@@ -20,6 +20,7 @@ Route::group(['middleware' => 'auth:sanctum'], static function () {
     // Route::get('services', [ServiceController::class, 'getServiceList']);
     Route::post('book-now', [BookingController::class, 'storeBooking']);
     Route::get('bookings', [BookingController::class, 'getBookingList']);
+    Route::get('admin/bookings', [BookingController::class, 'getAdminBookingList']);
 
     Route::resource('services', ServiceApiController::class)->names('api.services');
 });

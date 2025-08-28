@@ -15,6 +15,7 @@ use App\Manager\Traits\CommonResponse;
 use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
 use App\Http\Resources\BookingListResource;
+use App\Http\Resources\BookingListForAdminResource;
 
 class BookingController extends Controller
 {
@@ -178,6 +179,21 @@ class BookingController extends Controller
             $this->status_message = 'Booking list fetched successfully.';
         } catch (Throwable $throwable) {
             app_error_log('BOOKING_LIST_FETCH_FAILED', $throwable, 'error');
+            $this->status_message = $throwable->getMessage();
+            $this->status         = false;
+            $this->status_code    = $this->status_code_failed;
+        }
+        return $this->commonApiResponse();
+    }
+
+    final public function getAdminBookingList(Request $request)
+    {
+        try {
+            $bookings             = (new Booking())->getAdminBookingList($request);
+            $this->data           = BookingListForAdminResource::collection($bookings)->response()->getData();
+            $this->status_message = 'Admin booking list fetched successfully.';
+        } catch (Throwable $throwable) {
+            app_error_log('ADMIN_BOOKING_LIST_FETCH_FAILED', $throwable, 'error');
             $this->status_message = $throwable->getMessage();
             $this->status         = false;
             $this->status_code    = $this->status_code_failed;

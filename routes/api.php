@@ -14,6 +14,8 @@ Route::post('register', [AuthApiController::class, 'register']);
 Route::post('login', [AuthApiController::class, 'login']);
 
 Route::group(['middleware' => 'auth:sanctum'], static function () {
+    Route::post('logout', [AuthApiController::class, 'logout']);
+    
     Route::get('services', [ServiceController::class, 'getServiceList']);
     Route::post('book-now', [BookingController::class, 'storeBooking']);
     Route::get('bookings', [BookingController::class, 'getBookingList']);

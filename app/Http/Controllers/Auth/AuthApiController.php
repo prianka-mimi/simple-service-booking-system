@@ -69,4 +69,18 @@ class AuthApiController extends Controller
 
         return $this->commonApiResponse();
     }
+
+    final public function logout(Request $request): JsonResponse
+    {
+        try {
+            $request->user()?->currentAccessToken()?->delete();
+            $this->status_message = __('Logged out successfully.');
+        } catch (Throwable $throwable) {
+            app_error_log('LOGOUT_FAILED', $throwable, 'error');
+            $this->status_message = $throwable->getMessage();
+            $this->status = false;
+            $this->status_code = $this->status_code_failed;
+        }
+        return $this->commonApiResponse();
+    }
 }

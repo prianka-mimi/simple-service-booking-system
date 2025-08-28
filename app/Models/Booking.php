@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
 use App\Manager\Constants\GlobalConstants;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
 
 class Booking extends Model
 {
@@ -84,5 +85,14 @@ class Booking extends Model
     public static function getInactiveBookings()
     {
         return self::whereIn('status', [self::STATUS_CANCELLED, self::STATUS_COMPLETED])->count();
+    }
+
+    public function getBookingListForApi(Request $request): mixed
+    {
+        return self::query()
+            ->with(['user:id,name', 'service:id,name'])
+            ->where('user_id', Auth::id())
+            ->select('id', 'user_id', 'service_id', 'booking_date', 'status')
+            ->paginate($request->input('per_page', GlobalConstants::DEFAULT_PAGINATION));
     }
 }

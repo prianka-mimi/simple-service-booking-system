@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreBookingRequest;
-use App\Http\Requests\UpdateBookingRequest;
-use App\Manager\Traits\CommonResponse;
+use Throwable;
+use App\Models\User;
 use App\Models\Booking;
 use App\Models\Service;
-use App\Models\User;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Throwable;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use App\Manager\Traits\CommonResponse;
+use App\Http\Requests\StoreBookingRequest;
+use App\Http\Requests\UpdateBookingRequest;
+use App\Http\Resources\BookingListResource;
 
 class BookingController extends Controller
 {
@@ -152,5 +154,34 @@ class BookingController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    final public function storeBooking(StoreBookingRequest $request)
+    {
+        try {
+            (new Booking())->storeBooking($request);
+            $this->status_message = 'Booking created successfully.';
+        } catch (Throwable $throwable) {
+            app_error_log('BOOKING_CREATED_FAILED', $throwable, 'error');
+            $this->status_message = $throwable->getMessage();
+            $this->status         = false;
+            $this->status_code    = $this->status_code_failed;
+        }
+        return $this->commonApiResponse();
+    }
+
+    final public function getBookingList(Request $request)
+    {
+        try {
+            $bookings             = (new Booking())->getBookingListForApi($request);
+            $this->data           = BookingListResource::collection($bookings)->response()->getData();
+            $this->status_message = 'Booking list fetched successfully.';
+        } catch (Throwable $throwable) {
+            app_error_log('BOOKING_LIST_FETCH_FAILED', $throwable, 'error');
+            $this->status_message = $throwable->getMessage();
+            $this->status         = false;
+            $this->status_code    = $this->status_code_failed;
+        }
+        return $this->commonApiResponse();
     }
 }

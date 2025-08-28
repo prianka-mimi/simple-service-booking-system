@@ -4,6 +4,9 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use App\Manager\Constants\GlobalConstants;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +15,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -67,5 +70,31 @@ class User extends Authenticatable
     public static function getInactiveUsers()
     {
         return self::whereNull('email_verified_at')->count();
+    }
+
+    public function storeUser(Request $request, ?array $registration_data = null): Model
+    {
+        $user = self::query()->create($this->prepare_data($request));
+        return $user;
+    }
+
+    private function prepare_data(Request $request): array
+    {
+        $data = [
+            'name'      => $request->input('name'),
+            'email'     => $request->input('email'),
+            'password'  => Hash::make($request->input('password')),
+        ];
+
+        return $data;
+    }
+
+    final public function get_user_by_column(string $column, string $value, array $relations = []): Model | Null
+    {
+        $query = self::query()->where($column, $value);
+        if ($relations) {
+            $query->with($relations);
+        }
+        return $query->first();
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Manager\Constants\GlobalConstants;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -72,5 +73,13 @@ class Service extends Model
     public static function getInactiveServices()
     {
         return self::where('status', self::STATUS_INACTIVE)->count();
+    }
+
+    public function getServiceListForApi(Request $request): mixed
+    {
+        return self::query()
+            ->where('status', self::STATUS_ACTIVE)
+            ->select('id','name', 'description', 'price')
+            ->paginate($request->input('per_page', GlobalConstants::DEFAULT_PAGINATION));
     }
 }

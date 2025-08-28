@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use Throwable;
 use App\Models\Service;
+use Illuminate\View\View;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\RedirectResponse;
+use App\Manager\Traits\CommonResponse;
 use App\Http\Requests\StoreServiceRequest;
 use App\Http\Requests\UpdateServiceRequest;
-use App\Manager\Traits\CommonResponse;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\View\View;
-use Illuminate\Support\Facades\DB;
-use Throwable;
+use App\Http\Resources\ServiceListResource;
 
 class ServiceController extends Controller
 {
@@ -145,5 +146,19 @@ class ServiceController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    final public function getServiceList(Request $request){
+        try{
+            $services             = (new Service())->getServiceListForApi($request);
+            $this->data           = ServiceListResource::collection($services)->response()->getData();
+            $this->status_message = 'Service list fetched successfully.';
+        } catch (Throwable $throwable) {
+            app_error_log('SERVICE_LIST_FETCH_FAILED', $throwable, 'error');
+            $this->status_message = $throwable->getMessage();
+            $this->status         = false;
+            $this->status_code    = $this->status_code_failed;
+        }
+        return $this->commonApiResponse();
     }
 }

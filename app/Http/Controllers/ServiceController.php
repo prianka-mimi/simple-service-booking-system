@@ -147,18 +147,4 @@ class ServiceController extends Controller
 
         return redirect()->back();
     }
-
-    final public function getServiceList(Request $request){
-        try{
-            $services             = (new Service())->getServiceListForApi($request);
-            $this->data           = ServiceListResource::collection($services)->response()->getData();
-            $this->status_message = 'Service list fetched successfully.';
-        } catch (Throwable $throwable) {
-            app_error_log('SERVICE_LIST_FETCH_FAILED', $throwable, 'error');
-            $this->status_message = $throwable->getMessage();
-            $this->status         = false;
-            $this->status_code    = $this->status_code_failed;
-        }
-        return $this->commonApiResponse();
-    }
 }

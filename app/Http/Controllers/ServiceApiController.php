@@ -44,6 +44,13 @@ class ServiceApiController extends Controller
      */
     public function store(StoreServiceRequest $request)
     {
+        if (!auth()->user()->isAdmin()) {
+            $this->status = false;
+            $this->status_message = 'Access denied. Admin permission required.';
+            $this->status_code = 403;
+            return $this->commonApiResponse();
+        }
+
         try {
             (new Service())->storeService($request);
             $this->status_message = 'Service created successfully.';
@@ -75,9 +82,24 @@ class ServiceApiController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Service $service)
+    public function update(Request $request, $id)
     {
+        if (!auth()->user()->isAdmin()) {
+            $this->status = false;
+            $this->status_message = 'Access denied. Admin permission required.';
+            $this->status_code = 403;
+            return $this->commonApiResponse();
+        }
+
         try {
+            $service = Service::find($id);
+            if (!$service) {
+                $this->status = false;
+                $this->status_message = 'Service not found.';
+                $this->status_code = 404;
+                return $this->commonApiResponse();
+            }
+
             (new Service())->updateService($request, $service);
             $this->status_message = 'Service updated successfully.';
         } catch (Throwable $throwable) {
@@ -92,9 +114,24 @@ class ServiceApiController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Service $service)
+    public function destroy($id)
     {
+        if (!auth()->user()->isAdmin()) {
+            $this->status = false;
+            $this->status_message = 'Access denied. Admin permission required.';
+            $this->status_code = 403;
+            return $this->commonApiResponse();
+        }
+
         try {
+            $service = Service::find($id);
+            if (!$service) {
+                $this->status = false;
+                $this->status_message = 'Service not found.';
+                $this->status_code = 404;
+                return $this->commonApiResponse();
+            }
+
             (new Service())->deleteService($service);
             $this->status_message = 'Service deleted successfully.';
         } catch (Throwable $throwable) {

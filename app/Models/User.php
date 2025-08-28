@@ -26,6 +26,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_admin',
     ];
 
     /**
@@ -96,5 +97,10 @@ class User extends Authenticatable
             $query->with($relations);
         }
         return $query->first();
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->is_admin ?? false;
     }
 }

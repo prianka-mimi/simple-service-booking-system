@@ -188,6 +188,13 @@ class BookingController extends Controller
 
     final public function getAdminBookingList(Request $request)
     {
+        if (!auth()->user()->isAdmin()) {
+            $this->status = false;
+            $this->status_message = 'Access denied. Admin permission required.';
+            $this->status_code = 403;
+            return $this->commonApiResponse();
+        }
+
         try {
             $bookings             = (new Booking())->getAdminBookingList($request);
             $this->data           = BookingListForAdminResource::collection($bookings)->response()->getData();
